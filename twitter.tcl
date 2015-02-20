@@ -56,7 +56,7 @@
 # FOR TRACKING SEARCH TIMELINES TO WORK:
 # Type in partyline: ".chanset #yourchannel +twittertrack"
 #
-# 
+#
 #  I  M  P  O  R  T  A  N  T         D O  N O T  S K I P !
 #
 #  R  E  A  D    B  E  L  O  W    C  A  R  E  F  U  L  L  Y
@@ -80,7 +80,7 @@
 # http://github.com/horgh/twitter-tcl -> oauth.tcl
 # Original credit to horgh/fedex
 # Major rewrite done by speechles
-# 
+#
 # -----
 # HISTORY:
 # v6.01- major addition: support v1.1 api
@@ -376,7 +376,7 @@ set twitter(autoarrange) 0
 # Use this to fix timestamp durations and correct
 # issues synching your time to twitter's GMT time.
 # Enter the seconds offset required below, to disable
-# set this to 0. This is useful for Daylight savings 
+# set this to 0. This is useful for Daylight savings
 # time adjustments, as well as other issues.
 # Use either a Positive, or -Negative offset.
 # (integer)
@@ -724,7 +724,7 @@ if {[catch {package require tls} error]} {
 	putlog "Twitter: https NOT supported: tls package NOT found."
 	set twitter(tls) 0
 } else {
-	::http::register https 443 [list ::tls::socket -require 0 -request 1]
+  ::http::register https 443 [list ::tls::socket -tls1 1]
 	putlog "Twitter: https supported: tls package found."
 	set twitter(tls) 1
 }
@@ -788,7 +788,7 @@ proc proc:twitter:rate {nick uhost handle chan text} {
 		regexp -nocase {"remaining_hits":(.*?)(\}|,)} $html - rh
 		set rtis [duration [expr {[proc:twitter:duration $rt 1] - ([clock seconds] - $::twitter(fixMyDuration))}]]
 		putserv "$to :$twitter(logo)Rate-Info ($chan@$tuser): Total/Hits/Remaining \002$hl/[expr {$hl-$rh}]/$rh\002. Next reset occurs in $rtis ($rt)"
- 		if {[info exists pli]} { 
+ 		if {[info exists pli]} {
                putserv "$to :$twitter(logo)Rate-Photo ($chan@$tuser): Total/Hits/Remaining \002$pli/[expr {$pli-$ph}]/$ph\002. Next reset occurs in $ptis ($pt)"
             }
             putserv $text
@@ -898,7 +898,7 @@ proc proc:twitter:followers:auto {args} {
 			}
 			foreach entry $current {
 				if {[lsearch -exact $::twitter($tuser,followers) $entry] == -1} { lappend newf $entry }
-			}	
+			}
 			foreach entry $::twitter($tuser,followers) {
 				if {[lsearch -exact $current $entry] == -1} { lappend lostf $entry }
 			}
@@ -936,7 +936,7 @@ proc proc:twitter:followers:auto {args} {
 		}
 	}
 }
-	
+
 proc proc:twitter:restlist {type nick uhost handle chan text {auto 0}} {
 	if {![channel get $chan twitter]} { return }
 	global twitter
@@ -1531,7 +1531,7 @@ proc proc:twitter:megahal:privatereply {m h d mo y} {
 				set text [join [split [proc:twitter:descdecode [proc:twitter:descdecode $text]] "\r\t\v\a"] " "]
 			} else {
 				set text [join [split [proc:twitter:descdecode [proc:twitter:descdecode $text]] "\r\t\v\n\a"] " "]
-			} 
+			}
 			if {$twitter(usemegareply) > 0 && [channel get $chan twittermentionsmega]} {
 				if {[string equal -nocase $s $tuser]} { continue }
 				# tcl8.4 friendly, nocase lsearch
@@ -1638,7 +1638,7 @@ proc proc:twitter:megahal:privatereply {m h d mo y} {
 				}
 			}
 		}
-		if {[info exists postdata]} { 
+		if {[info exists postdata]} {
 			if {[lindex [lindex $postdata 0] 1] > $twitter($tuser,lastid)} { set twitter($tuser,lastid) [lindex [lindex $postdata 0] 1] }
 		}
 	}
@@ -1676,11 +1676,11 @@ proc proc:twitter:megahal {m h d mo y} {
 		if {[string first "<" $text] == 0} {
 			if {[regexp -- {^<(.*?)>(.*?)$} $text - nick rest]} {
 				if {[isbotnick $nick] || [regexp {^\s+@} $rest] || [regexp {^\s+RT\s} $rest]} { continue }
-				set text "$rest"	
+				set text "$rest"
 			} else { set nick "an unknown somebody" }
 		} elseif {[string equal "\*" [lindex [split $text] 0]]} {
 			set nick [lindex [split $text] 1]
-			set text [join [lrange [split $text] 2 end]] 
+			set text [join [lrange [split $text] 2 end]]
 		} else { set nick "an unknown somebody" }
 		set reply [string range "<$::botnick> [getreply $text]" 0 139]
 		if {$twitter(learn) > 0} { learn $text }
@@ -1897,7 +1897,7 @@ proc proc:twitter:restapi {nick uhost hand chan text type} {
 			set text [join [split [proc:twitter:descdecode [proc:twitter:descdecode $text]] "\r\t\v\a"] " "]
 		} else {
 			set text [join [split [proc:twitter:descdecode [proc:twitter:descdecode $text]] "\r\t\v\n\a"] " "]
-		} 
+		}
 		foreach line [split $text "\n"] {
 			if {[info exists twitter(apps,$tuser)]} {
 				foreach service $twitter(apps,$tuser) {
@@ -2096,7 +2096,7 @@ proc proc:twitter:jsondecode:restapi {html} {
 		#	}
 		#   }
             #}
- 
+
 		if {![regexp -- {"created_at"\:"(.*?)".*?"created_at"\:"(.*?)".*?"created_at"\:"(.*?)".*?"created_at"\:"(.*?)"} $entry - c c1 c2 c3]} {
 			if {![regexp -- {"created_at"\:"(.*?)".*?"created_at"\:"(.*?)"} $entry - c c1]} {
 				set c ""
@@ -2141,7 +2141,7 @@ proc proc:twitter:jsondecode:restapi {html} {
 				set n2 $n1 ; set n1 $n ; set n $n2 ; set s $s1
 			}
 			if {![info exists z]} { set z "" } elseif {![string length $rt] && ![string length $rid]} {
-				set n2 $n1 ; set n1 $n ; set n $n2 
+				set n2 $n1 ; set n1 $n ; set n $n2
 			}
 			if {[string length $rt]} { set n "$n1 ($rt$n$z)" } { set n $n }
             } else {
@@ -2244,7 +2244,7 @@ proc proc:twitter:jsondecode:private {html} {
 		if {![regexp -- {"in_reply_to_status_id"\:(.*?),} $entry - rid]} { set rid "" }
 		if {[string equal -nocase "null" $rid]} { set rid "" }
 		if {[string equal -nocase "null" $rn]} { set rn "" }
-		if {[regexp -nocase {"name"\:"(.*?)".*?"name"\:"(.*?)"} $entry - n n1]} { 
+		if {[regexp -nocase {"name"\:"(.*?)".*?"name"\:"(.*?)"} $entry - n n1]} {
 			set n "$n1 ($n)"
             } else {
 			regexp -nocase {"name"\:"(.*?)"} $entry - n
@@ -2255,7 +2255,7 @@ proc proc:twitter:jsondecode:private {html} {
 	}
 	return $friendslist
 }
-         
+
 proc proc:twitter:effect {text} {
 	return "$::twitter(effect-on)${text}$::twitter(effect-off)"
 }
@@ -2505,7 +2505,7 @@ proc proc:tweet {nick uhand handle chan input} {
 		set ret "[lindex [split $input] 0] "
 		set input "[join [lrange [split $input] 1 end]]"
 	} else { set ret "" }
-	if {[string equal -nocase "$twitter(me)" [lindex [split $input] 0]]} { 
+	if {[string equal -nocase "$twitter(me)" [lindex [split $input] 0]]} {
 		set act 0
 		set input [join [lrange [split $input] 1 end]]
 	} { set act 1 }
@@ -2541,7 +2541,7 @@ proc proc:tweet {nick uhand handle chan input} {
 		} else {
 			set tweetform "$ret$ment[string map [list %nick "* $nick" %chan $chan %text "$input" "%modes" "[proc:tweet:modes $nick $chan]"] $twitter(globaltweetformat)]"
 		}
-	}	
+	}
 	if {[string length $tweetform] > [expr {140 - $ncount}]} {
 		set cut " \[truncated] (...[string range [string map [list \n " "] $tweetform] [expr {120 - $ncount}] [expr {139 - $ncount}]]>|<[string range [string map [list \n " "] $tweetform] [expr {140 - $ncount}] [expr {160 - $ncount}]]...)"
 		set tweetform [string range $tweetform 0 [expr {139 - $ncount}]]
@@ -2727,7 +2727,7 @@ proc proc:twitter {nick uhand handle chan input} {
 			::http::cleanup $http
 			regsub -all "\n" $html " " html
 
-    			# DEBUG DEBUG                    
+    			# DEBUG DEBUG
       		set junk [open "twitter.txt" w]
       		puts $junk $html
       		close $junk
